@@ -5,4 +5,5 @@
 コンポーネントテスト1
 
 <x-tests.card title="タイトル" content="コンテント" :message="$message" />
+<x-tests.card title="タイトル2" />
 </x-tests.app>
