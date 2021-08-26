@@ -19,6 +19,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/dashboard';
 
+    // ログインをしたときに飛ばすURL
+    public const OWNER_HOME = 'owner/dashboard';
+    public const ADMIN_HOME = 'admin/dashboard';
+
+
     /**
      * The controller namespace for the application.
      *
@@ -43,7 +48,22 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
+
+            Route::prefix('admin')
+                ->as('admin.')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/admin.php'));
+                // owner.phpのすべてのURLの前にadmin
+
+            Route::prefix('owner')
+                ->as('owner.')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/owner.php'));
+                // owner.phpのすべてのURLの前にowner
+
+
+            Route::prefix('/')
+                ->as('user.')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
