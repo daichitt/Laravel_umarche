@@ -51,19 +51,21 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::prefix('admin')
                 ->as('admin.')
+                ->middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/admin.php'));
-                // owner.phpのすべてのURLの前にadmin
 
             Route::prefix('owner')
                 ->as('owner.')
+                ->middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/owner.php'));
-                // owner.phpのすべてのURLの前にowner
+            // owner.phpのすべてのURLの前にowner
 
 
             Route::prefix('/')
                 ->as('user.')
+                ->middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
