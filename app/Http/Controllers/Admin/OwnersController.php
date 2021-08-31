@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\Owner; //Eloquent
+use Illuminate\Support\Facades\DB; // Query Bulid
+use Carbon\Carbon; // for date
+
 class OwnersController extends Controller
 {
     /**
@@ -23,8 +27,27 @@ class OwnersController extends Controller
 
     public function index()
     {
-        //
-        dd("ooooooo");
+
+        // 
+        $date_now = Carbon::now();
+        $date_parse = Carbon::parse(now());
+
+        echo $date_now;
+        echo $date_parse;
+        // Eloquent方式
+        $e_all = Owner::all();
+
+        // QueryBuild方式
+        $q_get = DB::table('owners')->select('name', 'created_at')->get();
+        // $q_first = DB::table('owners')->select('name')->first();
+
+        //Collection method
+        // $c_test = collect([
+        //     'name' => 'てすと'
+        // ]);
+        // var_dump($q_first);
+        // dd($e_all, $q_get, $q_first, $c_test);
+        return view('admin.owners.index', compact('e_all', 'q_get'));
     }
 
     /**
