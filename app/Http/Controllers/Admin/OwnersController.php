@@ -29,11 +29,10 @@ class OwnersController extends Controller
     {
 
         // 
-        $date_now = Carbon::now();
-        $date_parse = Carbon::parse(now());
-
-        echo $date_now;
-        echo $date_parse;
+        // $date_now = Carbon::now();
+        // $date_parse = Carbon::parse(now());
+        // echo $date_now;
+        // echo $date_parse;
         // Eloquent方式
         $e_all = Owner::all();
 
@@ -47,7 +46,10 @@ class OwnersController extends Controller
         // ]);
         // var_dump($q_first);
         // dd($e_all, $q_get, $q_first, $c_test);
-        return view('admin.owners.index', compact('e_all', 'q_get'));
+
+        // Get data with Eloquent method
+        $owners = Owner::select('name', 'email', 'created_at')->get();
+        return view('admin.owners.index', compact('owners'));
     }
 
     /**
@@ -58,6 +60,8 @@ class OwnersController extends Controller
     public function create()
     {
         //
+        return view('admin.owners.create');
+
     }
 
     /**
