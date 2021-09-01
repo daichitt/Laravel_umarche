@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\Owner; //Eloquent
 use Illuminate\Support\Facades\DB; // Query Bulid
 use Carbon\Carbon; // for date
+use Illuminate\Support\Facades\Hash; // for store action
+use Illuminate\Validation\Rules;
+
 
 class OwnersController extends Controller
 {
@@ -72,7 +75,32 @@ class OwnersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // i can get data form form use request
+        // for instance $request->name = date from forms name="name" it like params in Ruby
+
+        // Do validate
+        $request->validate([
+            'name' => 'required|string|max:225',
+            'email' => 'required|string|email|max:225|unique:owners',
+            'password' => 'required|string|confirmed|min:8',
+            // confirmed = Password and password_confirmation
+        ]);
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'email' => 'required|string|email|max:255|unique:admins',
+        //     'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        // ]);
+        Owner::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        session()->flash('flash_message', '投稿が完了しました');
+        // If done redirect with route
+        return redirect()->route('admin.owners.index')->with('message', 'オーナー登録を実施しました');
+        // return redirect('/')->with('flash_message', '投稿が完了しました');
+
     }
 
     /**

@@ -14,6 +14,7 @@
 
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
+        <!-- if error true call this file resources\views\components\auth-validation-errors.blade.php -->
 
         <form method="POST" action="{{ route('admin.login') }}">
             @csrf
