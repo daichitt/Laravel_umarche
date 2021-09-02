@@ -40,7 +40,7 @@ class OwnersController extends Controller
         $e_all = Owner::all();
 
         // QueryBuild方式
-        $q_get = DB::table('owners')->select('name', 'created_at')->get();
+        $q_get = DB::table('owners')->select( 'name', 'created_at')->get();
         // $q_first = DB::table('owners')->select('name')->first();
 
         //Collection method
@@ -51,7 +51,7 @@ class OwnersController extends Controller
         // dd($e_all, $q_get, $q_first, $c_test);
 
         // Get data with Eloquent method
-        $owners = Owner::select('name', 'email', 'created_at')->get();
+        $owners = Owner::select('id', 'name', 'email', 'created_at')->get();
         return view('admin.owners.index', compact('owners'));
     }
 
@@ -96,7 +96,6 @@ class OwnersController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        session()->flash('flash_message', '投稿が完了しました');
         // If done redirect with route
         return redirect()->route('admin.owners.index')->with('message', 'オーナー登録を実施しました');
         // return redirect('/')->with('flash_message', '投稿が完了しました');
@@ -122,7 +121,12 @@ class OwnersController extends Controller
      */
     public function edit($id)
     {
-        //
+        //Eloquent
+        // findOrFail = 存在しない$idを取得した時は404を返す
+        $owner = Owner::findOrFail($id);
+
+        // dd($owner);
+        return view('admin.owners.edit', compact('owner'));
     }
 
     /**
@@ -135,6 +139,15 @@ class OwnersController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $owner = Owner::findOrfail($id);
+        $owner->name = $request->name;
+        $owner->email = $request->email;
+        $owner->password = Hash::make($request->password);
+        $owner->save();
+
+        return redirect()
+        ->route('admin.owners.index')
+        ->with('message', 'オーナー情報を更新しました。');
     }
 
     /**
