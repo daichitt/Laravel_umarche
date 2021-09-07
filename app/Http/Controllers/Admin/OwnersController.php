@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB; // Query Bulid
 use Carbon\Carbon; // for date
 use Illuminate\Support\Facades\Hash; // for store action
 use Illuminate\Validation\Rules;
+use SoftDeletes;
 
 
 class OwnersController extends Controller
@@ -97,7 +98,7 @@ class OwnersController extends Controller
         ]);
 
         // If done redirect with route
-        return redirect()->route('admin.owners.index')->with('message', 'オーナー登録を実施しました');
+        return redirect()->route('admin.owners.index')->with(['message'=> 'オーナー登録を実施しました', 'status' => 'info']);
         // return redirect('/')->with('flash_message', '投稿が完了しました');
 
     }
@@ -147,7 +148,7 @@ class OwnersController extends Controller
 
         return redirect()
         ->route('admin.owners.index')
-        ->with('message', 'オーナー情報を更新しました。');
+        ->with(['message' => 'オーナー情報を更新しました。', 'status' => 'info']);
     }
 
     /**
@@ -159,5 +160,27 @@ class OwnersController extends Controller
     public function destroy($id)
     {
         //
+        // dd('削除処理');
+        Owner::findOrfail($id)->delete();
+        return redirect()
+        ->route('admin.owners.index')
+        ->with(['message' => 'オーナー情報を削除しました。', 'status' => 'alert']);
+    }
+
+    // expiredOwnerIndex
+    public function expiredOwnerIndex()
+    {
+        // onlyTrashedメソッドによりソフトデリート済みのモデルのみを取得できます。
+        // dd('hhh');
+        $expiredOwners = Owner::onlyTrashed()->get();
+        return view('admin.expired-owners', compact('expiredOwners'));
+    }
+
+
+    public function expiredOwnerDestroy($id)
+    {
+        // onlyTrashedメソッドによりソフトデリート済みのモデルのみを取得できます。
+        Owner::onlyTrashed()->findOrfail($id)->forceDelete();
+        return redirect()->route('admin.expired-owners.index');
     }
 }

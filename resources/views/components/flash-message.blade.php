@@ -2,8 +2,8 @@
 <!--  Default  -->
 
 @php
-if($status === 'info'){ $bgColor = 'bg-blue-300';}
-if($status === 'error'){ $bgColor = 'bg-red-300';}
+if(session('status') === 'info'){ $bgColor = 'bg-blue-300';}
+if(session('status') === 'alert'){ $bgColor = 'bg-red-300';}
 @endphp
 
 @if(session('message'))
