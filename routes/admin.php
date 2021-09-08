@@ -25,12 +25,12 @@ use App\Http\Controllers\Admin\OwnersController;
 |
 */
 
-Route::get('/', function () {
-    return view('admin.welcome');
-});
+// Route::get('/', function () {
+//     return view('admin.welcome');
+// });
 
 // middlewareでログイン済、認証済のみに有効する
-Route::resource('owners', OwnersController::class)->middleware('auth:admin');
+Route::resource('owners', OwnersController::class)->middleware('auth:admin')->except(['show']);
 
 Route::prefix('expired-owners')->
 middleware('auth:admin')->group(function(){
