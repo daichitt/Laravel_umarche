@@ -10,6 +10,15 @@ class Shop extends Model
 {
     use HasFactory;
 
+    // ユーザー入力値を反映したくない属性を保護する
+    protected $fillable = [
+        'owner_id',
+        'name',
+        'information',
+        'filename',
+        'is_selling',
+    ];
+
 
     /**
      * お店を所有しているオーナーの取得

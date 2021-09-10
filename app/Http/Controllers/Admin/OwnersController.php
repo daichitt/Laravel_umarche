@@ -11,6 +11,9 @@ use Carbon\Carbon; // for date
 use Illuminate\Support\Facades\Hash; // for store action
 use Illuminate\Validation\Rules;
 use SoftDeletes;
+use Throwable;
+use Illuminate\Support\Facades\Log;
+use App\Models\Shop;
 
 
 class OwnersController extends Controller
@@ -41,7 +44,7 @@ class OwnersController extends Controller
         $e_all = Owner::all();
 
         // QueryBuild方式
-        $q_get = DB::table('owners')->select( 'name', 'created_at')->get();
+        $q_get = DB::table('owners')->select('name', 'created_at')->get();
         // $q_first = DB::table('owners')->select('name')->first();
 
         //Collection method
@@ -65,7 +68,6 @@ class OwnersController extends Controller
     {
         //
         return view('admin.owners.create');
-
     }
 
     /**
@@ -91,14 +93,38 @@ class OwnersController extends Controller
         //     'email' => 'required|string|email|max:255|unique:admins',
         //     'password' => ['required', 'confirmed', Rules\Password::defaults()],
         // ]);
-        Owner::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+
+        // If erroe ocared $e = error
+        try {
+
+
+            DB::transaction(function () use ($request) {
+
+                // $request->name;
+                $owner = Owner::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+
+                // オーナーとShopは1 to 1の関係のためOwnerを作成しそのIDでShopを作成
+                Shop::create([
+                    'owner_id' => $owner->id,
+                    'name' => '店名を入力',
+                    'information' => '',
+                    'filename' => '',
+                    'is_selling' => true,
+
+                ]);
+            }, 2);
+        } catch (Throwable $e) {
+            Log::error($e);
+            throw $e;
+        }
+
 
         // If done redirect with route
-        return redirect()->route('admin.owners.index')->with(['message'=> 'オーナー登録を実施しました', 'status' => 'info']);
+        return redirect()->route('admin.owners.index')->with(['message' => 'オーナー登録を実施しました', 'status' => 'info']);
         // return redirect('/')->with('flash_message', '投稿が完了しました');
 
     }
@@ -147,8 +173,8 @@ class OwnersController extends Controller
         $owner->save();
 
         return redirect()
-        ->route('admin.owners.index')
-        ->with(['message' => 'オーナー情報を更新しました。', 'status' => 'info']);
+            ->route('admin.owners.index')
+            ->with(['message' => 'オーナー情報を更新しました。', 'status' => 'info']);
     }
 
     /**
@@ -163,8 +189,8 @@ class OwnersController extends Controller
         // dd('削除処理');
         Owner::findOrfail($id)->delete();
         return redirect()
-        ->route('admin.owners.index')
-        ->with(['message' => 'オーナー情報を削除しました。', 'status' => 'alert']);
+            ->route('admin.owners.index')
+            ->with(['message' => 'オーナー情報を削除しました。', 'status' => 'alert']);
     }
 
     // expiredOwnerIndex
