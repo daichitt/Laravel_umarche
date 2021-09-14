@@ -9,6 +9,7 @@ use App\Http\Controllers\Owner\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Owner\Auth\NewPasswordController;
 use App\Http\Controllers\Owner\Auth\PassworOwnerdResetLinkController;
 use App\Http\Controllers\Owner\Auth\RegisteredUserController;
+use App\Http\Controllers\Owner\ShopController;
 use App\Http\Controllers\Owner\Auth\VerifyEmailController;
 
 
@@ -25,6 +26,14 @@ use App\Http\Controllers\Owner\Auth\VerifyEmailController;
 
 Route::get('/', function () {
     return view('owner.welcome');
+});
+
+// グループ内のすべてのルートURIの前にprefixを付けることができます。
+Route::prefix('shops')->
+middleware('auth:owners')->group(function(){
+    Route::get('index', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('edit/{shop}', [ShopController::class, 'edit'])->name('shops.edit');
+    Route::post('update/{shop}', [ShopController::class, 'update'])->name('shops.update');
 });
 
 Route::get('/dashboard', function () {
