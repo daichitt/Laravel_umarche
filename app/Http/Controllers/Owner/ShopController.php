@@ -41,9 +41,8 @@ class ShopController extends Controller
     {
 
         // 現在認証されているユーザーのID取得
-        $ownerId = Auth::id();
         // dd($ownerId);
-        $shops = Shop::where('owner_id', $ownerId)->get();
+        $shops = Shop::where('owner_id', Auth::id())->get();
         return view('owner.shops.index', compact('shops'));
     }
 
