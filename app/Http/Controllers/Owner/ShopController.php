@@ -7,6 +7,7 @@ use App\Models\Shop;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; 
 
 class ShopController extends Controller
 {
@@ -25,7 +26,7 @@ class ShopController extends Controller
                 $shopsOwnerId = Shop::findOrFail($id)->owner->id;
                 $shopId = (int) $shopsOwnerId;
                 $ownerId = Auth::id();
-                if($shopId !== $ownerId) { //同じでなかったら
+                if ($shopId !== $ownerId) { //同じでなかったら
                     abort(404);
                 }
             }
@@ -43,32 +44,32 @@ class ShopController extends Controller
         // 現在認証されているユーザーのID取得
         // dd($ownerId);
         $shops = Shop::where('owner_id', Auth::id())->get();
+        // dd($shops);
+
         return view('owner.shops.index', compact('shops'));
     }
 
 
     public function edit($id)
     {
-        dd(Shop::findOrFail($id));
+        $shop = Shop::findOrFail($id);
         //Eloquent
-        // findOrFail = 存在しない$idを取得した時は404を返す
-        $owner = Owner::findOrFail($id);
-        // dd($owner);
-        return view('admin.owners.edit', compact('owner'));
+        // dd($shop);
+        return view('owner.shops.edit', compact('shop'));
     }
 
 
     public function update(Request $request, $id)
     {
-        //
-        $owner = Owner::findOrfail($id);
-        $owner->name = $request->name;
-        $owner->email = $request->email;
-        $owner->password = Hash::make($request->password);
-        $owner->save();
+        // Update images
+        $imageFile = $request->image; //一時保存
+        if (!is_null($imageFile) && $imageFile->isValid()) { //nullでないかつアップロードに成功
+            Storage::putFile('public/shops', $imageFile);
+        }
+
 
         return redirect()
-            ->route('admin.owners.index')
-            ->with(['message' => 'オーナー情報を更新しました。', 'status' => 'info']);
+            ->route('owner.shops.index');
+            // ->with(['message' => 'オーナー情報を更新しました。', 'status' => 'info']);
     }
 }
