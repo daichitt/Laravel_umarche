@@ -9,7 +9,7 @@ use App\Http\Requests\UploadImageRequest;
 
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Storage;
 use InterventionImage;
 
 use App\Services\ImageService;
@@ -46,7 +46,6 @@ class ShopController extends Controller
     public function index()
     {
 
-        phpinfo();
         // 現在認証されているユーザーのID取得
         // dd($ownerId);
         $shops = Shop::where('owner_id', Auth::id())->get();
@@ -67,12 +66,39 @@ class ShopController extends Controller
 
     public function update(UploadImageRequest $request, $id)
     {
+
+
+        $request->validate([
+            'name' => 'required|string|max:50',
+            'information' => 'required|string|max:1000',
+            'is_selling' => 'required',
+            // confirmed = Password and password_confirmation
+        ]);
+
+
+
+
+
+
         // Update images
         $imageFile = $request->image; //一時保存
         if (!is_null($imageFile) && $imageFile->isValid()) { //nullでないかつアップロードに成功
             $filenameToStore = ImageService::upload($imageFile, 'shops');
         }
-        
-        return redirect()->route('owner.shops.index');
+
+        $shop = Shop::findOrfail($id);
+
+        $shop->name = $request->name;
+        $shop->information = $request->information;
+        $shop->is_selling = $request->is_selling;
+
+        if(!is_null($imageFile) && $imageFile->isValid()){
+            $shop->filename = $filenameToStore;
+        }
+        $shop->save();
+
+
+        return redirect()->route('owner.shops.index')
+        ->with(['message' => '店舗情報を更新しました。', 'status' => 'info']);
     }
 }
