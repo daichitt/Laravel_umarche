@@ -3,18 +3,42 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct()
+    {
+        // Authが認証していたら各Methodが使用できる
+        $this->middleware('auth:owners');
+
+        $this->middleware(function ($request, $next) {
+
+            $id = $request->route()->parameter('image');
+            if (is_null(!$id)) { // null判定
+                $imagesOwnerId = Image::findOrFail($id)->owner->id;
+                $shopId = (int) $imagesOwnerId;
+                if ($shopId !== Auth::id()) { 
+                    abort(404);
+                }
+            }
+            return $next($request);
+        });
+    }
+
+
     public function index()
     {
         //
+         // 現在認証されているユーザーのID取得
+        $images = Image::where('owner_id', Auth::id())
+        ->orderBy('updated_at', 'desc')->paginate(10);
+        // ->pagenate(20)->get();
+        
+
+        return view('owner.images.index', compact('images'));
     }
 
     /**
