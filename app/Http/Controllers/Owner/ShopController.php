@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use App\Http\Requests\UploadImageRequest;
+
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage; 
@@ -61,7 +63,7 @@ class ShopController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(UploadImageRequest $request, $id)
     {
         // Update images
         $imageFile = $request->image; //一時保存
@@ -72,7 +74,6 @@ class ShopController extends Controller
             $extension = $imageFile->extension();
             $fileNameToStore = $fileName.'.'.$extension;
             $resizedImage = InterventionImage::make($imageFile)->resize(1920, 1080)->encode();
-            dd($imageFile , $resizedImage );
             Storage::put('public/shops/' . $fileNameToStore, $resizedImage);
         }
 
