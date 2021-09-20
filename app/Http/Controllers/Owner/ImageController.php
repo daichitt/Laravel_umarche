@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\UploadImageRequest;
 use App\Services\ImageService;
+use Illuminate\Support\Facades\Storage;
 
 
 class ImageController extends Controller
@@ -78,7 +79,7 @@ class ImageController extends Controller
         }
 
         return redirect()->route('owner.images.index')
-        ->with(['message' => '画像登録を実施しました。', 'status' => 'info']);
+            ->with(['message' => '画像登録を実施しました。', 'status' => 'info']);
     }
 
     public function edit($id)
@@ -102,7 +103,7 @@ class ImageController extends Controller
 
         $image->save();
         return redirect()->route('owner.images.index')
-        ->with(['message' => '画像情報を更新しました。', 'status' => 'info']);
+            ->with(['message' => '画像情報を更新しました。', 'status' => 'info']);
     }
 
     /**
@@ -113,6 +114,17 @@ class ImageController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+
+        $image = Image::findOrFail($id);
+        $filePath = 'public/products/' . $image->filename;
+        if (Storage::exists($filePath)) { //File path exists
+            Storage::delete($filePath);
+        }
+
+        Image::findOrfail($id);
+        return redirect()
+            ->route('owner.images.index')
+            ->with(['message' => '画像を削除しました。', 'status' => 'alert']);
     }
 }
