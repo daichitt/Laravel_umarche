@@ -49,8 +49,6 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <!-- {{$owners->links() }} -->
-                                <!-- {{ $owners->links() }} -->
                                 {{$owners->links() }}
                             </div>
                         </div>
