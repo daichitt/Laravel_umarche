@@ -5,8 +5,34 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+use App\Models\Image;
+use App\Models\Product;
+use App\Models\SecondaryCategory;
+use App\Models\Owner;
+
 class ProductController extends Controller
 {
+
+    // オブジェクトがnewによって作成されるとき）に自動的に呼び出されるメソッド
+    public function __construct()
+    {
+        // Authが認証していたら各Methodが使用できる
+        $this->middleware('auth:owners');
+
+        $this->middleware(function ($request, $next) {
+
+            $id = $request->route()->parameter('product');
+            if (is_null(!$id)) { // null判定
+                $productOwnerId = Product::findOrFail($id)->shop->owner->id;
+                $productId = (int) $productOwnerId;
+                if ($productId !== Auth::id()) {
+                    abort(404);
+                }
+            }
+            return $next($request);
+        });
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +40,24 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        // ログインしているオーナーのproductがすべて取得できる
+        // $products = Owner::findOrFail(Auth::id())->shop->product;
+        // dd($products);
+
+        $ownerInfo = Owner::with('shop.product.imageFirst')
+            ->where('id', Auth::id())->get();
+        // dd($ownerInfo);
+
+        // foreach ($ownerInfo as $owner) {
+        //     foreach ($owner->shop->product as $product){
+        //         dd($product->imageFirst->filename);
+        //     }
+        //     // dd($owner->shop->product);
+        // }
+        // endforeach
+
+
+        return view('owner.products.index', compact('ownerInfo'));
     }
 
     /**
