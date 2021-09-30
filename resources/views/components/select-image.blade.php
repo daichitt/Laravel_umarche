@@ -31,7 +31,7 @@
           </div>
       </main>
       <footer class="modal__footer">
-        <button type="button" class="modal__btn" data-micromodal-close aria-label="閉じる">閉じる</button>
+        <button class="py-2 px-4 bg-gray-200" type="button" class="modal__btn" data-micromodal-close aria-label="閉じる">閉じる</button>
       </footer>
     </div>
   </div>
