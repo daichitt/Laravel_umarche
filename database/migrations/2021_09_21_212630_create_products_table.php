@@ -16,20 +16,19 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('infomation');
-            $table->unsignedInteger('infomation'); //マイナス無し
-            $table->boolean('infomation');
+            $table->text('information');
+            $table->unsignedInteger('price');
+            $table->boolean('is_selling');
             $table->integer('sort_order')->nullable();
             $table->foreignId('shop_id')
             ->constrained()
-            ->upDate('cascade')
+            ->onUpdate('cascade')
             ->onDelete('cascade');
             $table->foreignId('secondary_category_id')
             ->constrained();
             $table->foreignId('image1')
             ->nullable()
             ->constrained('images');
-
             $table->foreignId('image2')
             ->nullable()
             ->constrained('images');
