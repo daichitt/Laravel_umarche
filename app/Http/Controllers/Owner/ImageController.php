@@ -122,7 +122,8 @@ class ImageController extends Controller
             Storage::delete($filePath);
         }
 
-        Image::findOrfail($id);
+        // ->delete()記載抜けを記載しました。。
+        Image::findOrfail($id)->delete();
         return redirect()
             ->route('owner.images.index')
             ->with(['message' => '画像を削除しました。', 'status' => 'alert']);
