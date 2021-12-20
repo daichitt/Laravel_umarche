@@ -109,3 +109,11 @@ export default {
   }
 }
 </script>
+
+
+<!-- app.cssのコード -->
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import "../../node_modules/vue-multiselect/dist/vue-multiselect.min.css";
