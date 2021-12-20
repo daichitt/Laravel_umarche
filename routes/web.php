@@ -30,6 +30,9 @@ Route::get('/servicecontainertest', [LifeCycleTestController::class, 'showServic
 Route::get('/servicecprovidertest', [LifeCycleTestController::class, 'showServiceProviderTest']);
 
 
+Route::group(['middleware' => ['auth:sanctum', 'verified']], function ($route) {
+    $route->get('/contacts', [ContactsController::class, 'index'])->name('contacts');
+});
 
 
 require __DIR__.'/auth.php';
